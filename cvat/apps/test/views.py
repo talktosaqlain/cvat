@@ -4,12 +4,12 @@
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from cvat.apps.engine.models import Task
 
 from .counts import get_annotation_counts
+from .permissions import AnnotationCountsPermission
 from .serializers import AnnotationCountsSerializer
 
 
@@ -17,7 +17,7 @@ from .serializers import AnnotationCountsSerializer
 class AnnotationCountsViewSet(viewsets.GenericViewSet):
     queryset = Task.objects.select_related("project")
     filter_backends = []
-    permission_classes = [IsAuthenticated]
+    iam_permission_class = AnnotationCountsPermission
 
     @extend_schema(
         summary="Get the number of annotations per label for a task",
