@@ -39,3 +39,8 @@ if debug.is_debugging_enabled():
             return await super().handle(*args, **kwargs)
 
     application = DebuggerApp()
+
+
+from cvat.apps.test.live import with_annotation_counts_ws  # noqa: E402
+
+application = with_annotation_counts_ws(application)
