@@ -1,0 +1,9 @@
+const WebSocket = require(process.cwd() + '/node_modules/ws');
+const [cookie, url] = process.argv.slice(2);
+const anon = new WebSocket(url);
+anon.on('error', (e) => console.log('no login -> rejected:', e.message));
+const ws = new WebSocket(url, { headers: { Cookie: cookie } });
+ws.on('open', () => console.log('logged in -> open'));
+ws.on('message', (m) => { console.log('message', m.toString()); if (m.toString().includes('annotations_changed')) process.exit(0); });
+ws.on('close', (c) => console.log('closed', c));
+setTimeout(() => { console.log('timeout, no message'); process.exit(1); }, 20000);

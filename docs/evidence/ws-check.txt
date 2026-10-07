@@ -1,0 +1,6 @@
+Date: Wed Oct  7 23:04:06 PST 2026
+node docs/evidence/ws-check.js <session cookie> ws://localhost:8080/api/test/tasks/3/annotation-counts/ws, then PATCH a box into job 2
+no login -> rejected: Unexpected server response: 403
+logged in -> open
+message {"type": "annotations_changed", "task_id": 3}
+patch 200
