@@ -15,6 +15,13 @@
     margin-top: $grid-unit-size * 2;
 }
 
+.cvat-annotation-counts-controls {
+    display: flex;
+    align-items: center;
+    gap: $grid-unit-size;
+    margin-bottom: $grid-unit-size * 2;
+}
+
 .cvat-annotation-counts-total {
     display: block;
     margin-bottom: $grid-unit-size * 2;

@@ -9,11 +9,12 @@ import { useParams } from 'react-router';
 import { Row, Col } from 'antd/lib/grid';
 import Button from 'antd/lib/button';
 import Empty from 'antd/lib/empty';
+import Switch from 'antd/lib/switch';
 import Result from 'antd/lib/result';
 import Title from 'antd/lib/typography/Title';
 import Text from 'antd/lib/typography/Text';
 import {
-    Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip,
+    Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Tooltip,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
@@ -21,16 +22,20 @@ import { getCore } from 'cvat-core-wrapper';
 import GoBackButton from 'components/common/go-back-button';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
+ChartJS.register(BarElement, CategoryScale, Legend, LinearScale, Tooltip);
 
 const core = getCore();
 const BAR_HEIGHT = 22;
+const SHAPE_TYPE_COLORS = [
+    '#1677ff', '#fa8c16', '#52c41a', '#eb2f96', '#722ed1', '#13c2c2', '#faad14', '#8c8c8c',
+];
 
 interface LabelCount {
     id: number;
     name: string;
     color: string;
     count: number;
+    by_shape_type?: Record<string, number>;
 }
 
 interface AnnotationCounts {
@@ -44,6 +49,7 @@ function AnnotationCountsPage(): JSX.Element {
     const [counts, setCounts] = useState<AnnotationCounts | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [byShapeType, setByShapeType] = useState(false);
 
     const fetchCounts = useCallback(async () => {
         setLoading(true);
@@ -51,7 +57,7 @@ function AnnotationCountsPage(): JSX.Element {
         try {
             const response = await core.server.request(
                 `${core.config.backendAPI}/test/tasks/${tid}/annotation-counts`,
-                { method: 'GET' },
+                { method: 'GET', params: byShapeType ? { group_by: 'shape_type' } : {} },
             );
             setCounts(response.data);
         } catch (err: unknown) {
@@ -60,7 +66,7 @@ function AnnotationCountsPage(): JSX.Element {
         } finally {
             setLoading(false);
         }
-    }, [tid]);
+    }, [tid, byShapeType]);
 
     useEffect(() => {
         fetchCounts();
@@ -88,6 +94,16 @@ function AnnotationCountsPage(): JSX.Element {
         );
     } else {
         const labels = counts.labels.filter((label) => label.count > 0);
+        const shapeTypes = [...new Set(labels.flatMap((label) => Object.keys(label.by_shape_type ?? {})))];
+        const datasets = byShapeType ? shapeTypes.map((shapeType, index) => ({
+            label: shapeType,
+            data: labels.map((label) => label.by_shape_type?.[shapeType] ?? 0),
+            backgroundColor: SHAPE_TYPE_COLORS[index % SHAPE_TYPE_COLORS.length],
+        })) : [{
+            label: 'annotations',
+            data: labels.map((label) => label.count),
+            backgroundColor: labels.map((label) => label.color),
+        }];
         content = (
             <>
                 <Text className='cvat-annotation-counts-total'>
@@ -97,16 +113,16 @@ function AnnotationCountsPage(): JSX.Element {
                     <Bar
                         data={{
                             labels: labels.map((label) => label.name),
-                            datasets: [{
-                                data: labels.map((label) => label.count),
-                                backgroundColor: labels.map((label) => label.color),
-                            }],
+                            datasets,
                         }}
                         options={{
                             indexAxis: 'y',
                             maintainAspectRatio: false,
-                            plugins: { tooltip: { enabled: true } },
-                            scales: { y: { ticks: { autoSkip: false } } },
+                            plugins: { legend: { display: byShapeType } },
+                            scales: {
+                                x: { stacked: true },
+                                y: { stacked: true, ticks: { autoSkip: false } },
+                            },
                         }}
                     />
                 </div>
@@ -121,6 +137,10 @@ function AnnotationCountsPage(): JSX.Element {
                 <Title level={4} className='cvat-annotation-counts-title'>
                     {`Annotation counts for task #${tid}`}
                 </Title>
+                <div className='cvat-annotation-counts-controls'>
+                    <Switch checked={byShapeType} onChange={setByShapeType} />
+                    <Text>Split by shape type</Text>
+                </div>
                 {content}
             </Col>
         </Row>
