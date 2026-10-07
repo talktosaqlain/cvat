@@ -1,0 +1,7 @@
+URL: http://localhost:8080/api/test/tasks/2/annotation-counts
+Date: Wed Oct  7 22:30:01 PST 2026
+run 1: 200 0.814293s
+run 2: 200 0.749376s
+run 3: 200 0.753724s
+run 4: 200 0.765351s
+run 5: 200 0.877635s

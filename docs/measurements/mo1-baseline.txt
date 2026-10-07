@@ -1,0 +1,2 @@
+python loop 2130ms 1171ms 1280ms 1064ms 1019ms median 1171ms
+group by in db 81ms 56ms 44ms 43ms 55ms median 55ms
