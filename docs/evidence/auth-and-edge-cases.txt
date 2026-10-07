@@ -1,0 +1,7 @@
+Date: Wed Oct  7 23:03:41 PST 2026
+no login:      401
+viewer (no access): 403
+admin:         200
+missing task:  404
+bad group_by:  400
+empty task 4:  {"task_id":4,"total":0,"labels":[{"id":163,"name":"car","color":"#2080c0","count":0}]}

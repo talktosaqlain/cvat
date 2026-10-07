@@ -1,0 +1,7 @@
+URL: http://localhost:8080/api/test/tasks/2/annotation-counts?group_by=shape_type
+Date: Wed Oct  7 22:30:41 PST 2026
+run 1: 200 0.132073s
+run 2: 200 0.134273s
+run 3: 200 0.131728s
+run 4: 200 0.131685s
+run 5: 200 0.113399s

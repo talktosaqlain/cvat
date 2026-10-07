@@ -1,0 +1,10 @@
+Date: 2026-10-07 23:03:58.408567
+Task 2, endpoint vs instances_val2017.json
+totals: endpoint=41866 coco_polygon_parts=41866 coco_objects=36781
+labels where endpoint != coco polygon parts: 0 of 80
+label       endpoint   parts  objects
+person         12451   12451    11004
+car             2315    2315     1932
+chair           2141    2141     1791
+book            1184    1184     1161
+dog              237     237      218

@@ -1,0 +1,27 @@
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=2648.19..2648.21 rows=1 width=12) (actual time=69.255..79.037 rows=80 loops=1)
+   Group Key: s.label_id
+   ->  Sort  (cost=2648.19..2648.19 rows=1 width=12) (actual time=65.693..71.249 rows=41866 loops=1)
+         Sort Key: s.label_id
+         Sort Method: quicksort  Memory: 3519kB
+         ->  Nested Loop  (cost=16.68..2648.18 rows=1 width=12) (actual time=0.099..50.039 rows=41866 loops=1)
+               Join Filter: (j.segment_id = g.id)
+               ->  Hash Join  (cost=12.51..2632.40 rows=209 width=16) (actual time=0.078..33.096 rows=41866 loops=1)
+                     Hash Cond: (s.job_id = j.id)
+                     ->  Seq Scan on engine_labeledshape s  (cost=0.00..2507.66 rows=41866 width=16) (actual time=0.025..19.381 rows=41866 loops=1)
+                           Filter: (parent_id IS NULL)
+                     ->  Hash  (cost=12.50..12.50 rows=1 width=8) (actual time=0.027..0.028 rows=2 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           ->  Seq Scan on engine_job j  (cost=0.00..12.50 rows=1 width=8) (actual time=0.013..0.014 rows=2 loops=1)
+                                 Filter: ((type)::text = 'annotation'::text)
+               ->  Materialize  (cost=4.16..9.51 rows=2 width=4) (actual time=0.000..0.000 rows=1 loops=41866)
+                     ->  Bitmap Heap Scan on engine_segment g  (cost=4.16..9.50 rows=2 width=4) (actual time=0.010..0.011 rows=1 loops=1)
+                           Recheck Cond: (task_id = 2)
+                           Heap Blocks: exact=1
+                           ->  Bitmap Index Scan on engine_segment_task_id_37d935cf  (cost=0.00..4.16 rows=2 width=0) (actual time=0.004..0.005 rows=1 loops=1)
+                                 Index Cond: (task_id = 2)
+ Planning Time: 4.637 ms
+ Execution Time: 79.676 ms
+(23 rows)
+
